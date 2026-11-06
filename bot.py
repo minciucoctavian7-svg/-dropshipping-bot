@@ -1,6 +1,8 @@
 
 import os
 import sqlite3
+import threading
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from datetime import datetime
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -175,9 +177,31 @@ async def messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=menu()
         )
 
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(b"OTO Market Bot is running")
+
+    def log_message(self, format, *args):
+        return
+
+
+def start_health_server():
+    port = int(os.getenv("PORT", "10000"))
+    server = ThreadingHTTPServer(("0.0.0.0", port), HealthHandler)
+    print(f"Health server listening on port {port}.")
+    server.serve_forever()
+
+
 def main():
     if not TOKEN:
         raise RuntimeError("BOT_TOKEN не задан")
+
+    # Render Web Service expects the process to listen on PORT.
+    threading.Thread(target=start_health_server, daemon=True).start()
+
     app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(buttons))

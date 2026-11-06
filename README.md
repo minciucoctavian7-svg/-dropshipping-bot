@@ -31,3 +31,4 @@ Start Command:
 Важно: SQLite на обычном Render-диске не предназначен для постоянного хранения при перезапусках/пересоздании сервиса. Для рабочей версии с постоянными заказами лучше подключить PostgreSQL.
 
 Также эта версия является Telegram-магазином, а не автоматическим продавцом на Avito/других маркетплейсах. Для такой функции нужны отдельные API/интеграции каждой площадки.
+\n\n## Render\nThis version is configured as a Web Service and listens on Render's PORT while the Telegram bot runs with polling. Set BOT_TOKEN and ADMIN_CHAT_ID in Render Environment Variables.\n
